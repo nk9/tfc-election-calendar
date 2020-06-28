@@ -19,8 +19,10 @@
 
  <!-- Election Calendar Template -->
  <script type="text/template" id="clndr-multimonth-template">
+ 	<div class="months-scroller">
+ 	<div class="months-container">
 	<% _.each(months, function (oneMonth) { %>
-	<div class="flex-item month">
+	<div class="month">
 		<div class="controls">
 			<div class="month-header"><%= oneMonth.month.format('MMMM YYYY') %></div>
 		</div>
@@ -38,6 +40,8 @@
 		</div>
 	</div>
 	<% }); %>
+	</div>
+	</div>
 	<div class="flex-item events">
 		<% var seenEarlyVoting = false;
 			_.each(eventsThisInterval, function(month) {
@@ -91,6 +95,19 @@
 	justify-content: center;
 	flex-wrap: wrap;
 }
+/* Needed to fix the "missing last-item right padding" problem. See https://stackoverflow.com/a/26892899/1749551 */
+#election-cal .clndr .months-scroller {
+	overflow-x: auto;
+	width: 100%;
+}
+#election-cal .clndr .months-container {
+	display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    min-width: 100%;
+	height: 17rem;
+    float: left;
+}
 #election-cal .clndr .month {
 	width: 280px;
 	flex: 0 1 auto;
@@ -119,7 +136,6 @@
 }
 #election-cal .clndr .days-container {
 	width: 100%;
-	/*height: 213px;*/
 	flex: 1;
 	
 	display: inline-block;
@@ -164,12 +180,12 @@
 	-ms-transition: background-color 0.5s;
 	-o-transition: background-color 0.5s;
 	transition: background-color 0.5s;
-	/*cursor: pointer;*/
+	cursor: pointer;
 }
-#election-cal .clndr .days-container .days .day.event .number {
+#election-cal .clndr .days-container .days .day.event.has-icon .number {
 	display: none;
 }
-#election-cal .clndr .days-container .days .day.event:hover .number {
+#election-cal .clndr .days-container .days .day.event.has-icon:hover .number {
 	display: inline-block;
 }
 #election-cal .clndr .days-container .days .day.event .icon {
@@ -215,31 +231,12 @@
 }
 #election-cal .clndr .events .active-event {
 	background-color: #EE9295;
+	border-radius: 3px;
 }
 * {
-	margin: 0;
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
-}
-body {
-	font-family: Inconsolata, Monaco, 'Andale Mono', Courier;
-	font-size: 18px;
-	color: #212121;
-}
-
-@media all and (max-width: 768px) {
-	h1.banner-text {
-		font-size: 28px;
-	}
-	.banner-text.below {
-		font-size: 16px;
-		word-wrap: break-word;
-	}
-	code[class*="language-"],
-	pre[class*="language-"] {
-		font-size: 14px;
-	}
 }
 </style>
 
@@ -252,6 +249,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	function clickElectionEvent(target) {
 		console.log("clicked ", target);
+		if (target.events) {
+			window.location = target.events[0].link;
+		}
 	}
 
 	function doneRendering() {
@@ -267,8 +267,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 				if (event.icon) {
 					dayEl.append(`<span class="icon">${event.icon}</span>`);
-				} else {
-					dayEl.find('.number').removeClass('number');
+					dayEl.addClass('has-icon');
 				}
 			}
 
@@ -286,8 +285,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 					if (event.icon) {
 						dayEl.append(`<span class="icon">${event.icon}</span>`);
-					} else {
-						dayEl.find('.number').removeClass('number');
+						dayel.addClass('has-icon');
 					}
 				}
 			}
@@ -392,18 +390,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	////////
 	// General calendar
 	////////
-	else if (moment().isAfter('2020-08-18'))
+	else if (true) //(moment().isAfter('2020-08-18'))
 	{
 		// Fix up dates for the general
-		clndrOptions.events[0].date = "2020-09-24";
-		clndrOptions.events[1].date = "2020-10-05";
-		clndrOptions.events[2].start = "2020-10-19";
-		clndrOptions.events[2].end = "2020-11-01";
-		clndrOptions.events[3].date = "2020-11-01";
-		clndrOptions.events[4].date = "2020-10-31";
-		clndrOptions.events[5].date = "2020-11-03";
+		clndrOptions.events[0].date = "2020-09-24";  // VBM starts arriving
+		clndrOptions.events[1].date = "2020-10-05";  // Registration deadline
+		clndrOptions.events[2].start = "2020-10-19"; // Early voting
+		clndrOptions.events[2].end = "2020-11-01";   //
+		clndrOptions.events[3].date = "2020-11-01";  // VBM request deadline
+		clndrOptions.events[4].date = "2020-10-31";  // VBM return deadline
+		clndrOptions.events[5].date = "2020-11-03";  // Election day
 
-		clndrOptions.startWithMonth = "2020-09-01";
+		clndrOptions.startWithMonth =
 		clndrOptions.lengthOfTime.startDate = "2020-09-01";
 
 		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
