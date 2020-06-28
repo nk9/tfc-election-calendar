@@ -32,7 +32,7 @@
 				<% }); %>
 				</div>
 			<% _.each(oneMonth.days, function (day) { %>
-				<div class="<%= day.classes %>"><%= day.day %></div>
+				<div class="<%= day.classes %>"><span class="number"><%= day.day %></span></div>
 			<% }); %>
 			</div>
 		</div>
@@ -164,6 +164,18 @@
 	transition: background-color 0.5s;
 	/*cursor: pointer;*/
 }
+#election-cal .clndr .days-container .days .day.event .number {
+	display: none;
+}
+#election-cal .clndr .days-container .days .day.event:hover .number {
+	display: inline-block;
+}
+#election-cal .clndr .days-container .days .day.event .icon {
+	display: inline-block;
+}
+#election-cal .clndr .days-container .days .day.event:hover .icon {
+	display: none;
+}
 #election-cal .clndr .days-container .days .day.event:hover,
 #election-cal .clndr .days-container .days .empty.event:hover {
 	background-color: #b8b8b8;
@@ -251,7 +263,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			if (event.date) {
 				mydate = event.date;
 				mytype = event.type;
-				$('.day.calendar-day-'+mydate+'').addClass(mytype);
+				let dayEl = $('.day.calendar-day-'+mydate);
+				dayEl.addClass(mytype);
+
+				if (event.icon) {
+					dayEl.append('<span class="icon">X</span>');
+				} else {
+					dayEl.find('.number').removeClass('number');
+				}
 			}
 
 			// Multi-day events
@@ -261,7 +280,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				for (let day of range.by('day')) {
 					mydate = day.format('YYYY-MM-DD');
 					mytype = event.type;
-					$('.day.calendar-day-'+mydate+'').addClass(mytype);
+					
+					// Add in the icon
+					let dayEl = $('.day.calendar-day-'+mydate);
+					dayEl.addClass(mytype);
+
+					if (event.icon) {
+						dayEl.append('<span class="icon">X</span>');
+					} else {
+						dayEl.find('.number').removeClass('number');
+					}
 				}
 			}
 		}
@@ -328,9 +356,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm"
 				}, {
 					title: "Election Day!",
-					date: "2020-08-18",
-					type: "election",
-					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html"
+					date:  "2020-08-18",
+					type:  "election",
+					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
+					icon:  "\u1F5F3", 
 				}
 			],
 			multiDayEvents: {
