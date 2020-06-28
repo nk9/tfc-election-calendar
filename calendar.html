@@ -290,16 +290,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	}
 
 	function doneRendering() {
-		// Add event type classes
+	// Add event type classes
 		for (let event of this.options.events) {
-			// Single-day events
+		// Single-day events
 			if (event.date) {
 				mydate = event.date;
 				mytype = event.type;
 				$('.day.calendar-day-'+mydate+'').addClass(mytype);
 			}
 
-			// Multi-day events
+		// Multi-day events
 			else {
 				const range = moment.range(event.start, event.end);
 
@@ -330,37 +330,37 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			template: $('#clndr-multimonth-template').html(),
 			startWithMonth: "2020-09-01",
 			showAdjacentMonths: false,
-			events: [
-				{
-					title: 'VBM ballots begin to arrive',
-					date: '2020-09-24',
-					type: 'vbm'
+	events: [
+		{
+			title: "VBM ballots begin to arrive",
+			date: "2020-09-24",
+			type: "vbm"
+		}, {
+			title: "Registration deadline",
+			date: "2020-10-05",
+			type:  "registration"
+		}, {
+			title: "Early Voting",
+			start: "2020-10-19",
+			end:   "2020-11-01",
+			type:  "early-voting"
+		}, {
+					title: "Deadline to return VBM ballot",
+					date: "2020-11-01",
+					type: "vbm"
 				}, {
-					title: 'Registration deadline',
-					date: '2020-10-05',
-					type:  'registration'
+					title: "Deadline to request VBM ballot, in person",
+					date: "2020-10-31",
+					type: "vbm"
 				}, {
-					title: 'Early Voting',
-					start: '2020-10-19',
-					end:   '2020-11-01',
-					type:  "early-voting"
-				}, {
-					title: 'Deadline to return VBM ballot',
-					date: '2020-11-01',
-					type: 'vbm'
-				}, {
-					title: 'Deadline to request VBM ballot, in person',
-					date: '2020-10-31',
-					type: 'vbm'
-				}, {
-					title: 'Election Day!',
-					date: '2020-11-03',
-					type: 'election'
+					title: "Election Day!",
+					date: "2020-11-03",
+					type: "election"
 				}
 			],
 			multiDayEvents: {
-				startDate: 'start',
-				endDate:   'end'
+				startDate: "start",
+				endDate:   "end"
 			},
 			lengthOfTime: {
 				months: 3
@@ -383,41 +383,41 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			events: [
 				{
 					// Next day after ballots begin to be sent
-					title: 'VBM ballots begin to arrive',
-					date: '2020-06-25',
-					type: 'vbm'
+					title: "VBM ballots begin to arrive",
+					date: "2020-06-25",
+					type: "vbm"
 				}, {
-					title: 'Registration deadline',
-					date:  '2020-07-20',
-					type:  'registration'
+					title: "Registration deadline",
+					date:  "2020-07-20",
+					type:  "registration"
 				}, {
-					title: 'Early Voting',
-					start: '2020-08-08',
-					end:   '2020-08-15',
+					title: "Early Voting",
+					start: "2020-08-08",
+					end:   "2020-08-15",
 					type:  "early-voting" 
 				}, {
-					title: 'Deadline to request VBM ballot, in person',
-					date: '2020-08-15',
-					type: 'vbm'
+					title: "Deadline to request VBM ballot, in person",
+					date: "2020-08-15",
+					type: "vbm"
 				}, {
-					title: 'Deadline to return VBM ballot',
-					date: '2020-08-16',
-					type: 'vbm'
+					title: "Deadline to return VBM ballot",
+					date: "2020-08-16",
+					type: "vbm"
 				}, {
-					title: 'Election Day!',
-					date: '2020-08-18',
-					type: 'election'
+					title: "Election Day!",
+					date: "2020-08-18",
+					type: "election"
 				}
 			],
 			multiDayEvents: {
-				startDate: 'start',
-				endDate:   'end',
-			    singleDay: 'date'
+				startDate: "start",
+				endDate:   "end",
+			    singleDay: "date"
 			},
 			lengthOfTime: {
 				months: 3,
 				interval: 1,
-				startDate: '2020-06-01'
+				startDate: "2020-06-01"
 			},
 			clickEvents: {
 				click: clickElectionEvent
