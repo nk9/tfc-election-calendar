@@ -74,6 +74,8 @@
 	margin: 0 auto;
 }
 #election-cal .clndr {
+	max-width: 59rem;
+	margin: auto;
 	/* Flex */
 	display: flex;
 	align-content: flex-start;
@@ -181,10 +183,14 @@
 	width: 100%;
 
 	display: flex;
+	flex-direction: column;
 }
-#election-cal .clndr .events .event-item {
-	width: 10rem;
-	height: 10rem;
+.event-item {
+	width: 19rem;
+	padding: .5rem;
+}
+.event-item-date {
+	font-weight: bold;
 }
 #election-cal .clndr .events .active-event {
 	background-color: #EE9295;
@@ -303,7 +309,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			date: "2020-10-05",
 			type:  "registration"
 		}, {
-					title: "Early Voting",
+					title: "Early voting period",
 					start: "2020-10-19",
 					end:   "2020-11-01",
 					type:  "early-voting"
