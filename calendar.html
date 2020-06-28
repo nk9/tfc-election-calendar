@@ -282,8 +282,34 @@ body {
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(event) {
+	// Load the moment-range extension
+	window['moment-range'].extendMoment(moment);
+
 	function clickElectionEvent(target) {
 		console.log("clicked ", target);
+	}
+
+	function doneRendering() {
+		// Add event type classes
+		for (let event of this.options.events) {
+			// Single-day events
+			if (event.date) {
+				mydate = event.date;
+				mytype = event.type;
+				$('.day.calendar-day-'+mydate+'').addClass(mytype);
+			}
+
+			// Multi-day events
+			else {
+				const range = moment.range(event.start, event.end);
+
+				for (let day of range.by('day')) {
+					mydate = day.format('YYYY-MM-DD');
+					mytype = event.type;
+					$('.day.calendar-day-'+mydate+'').addClass(mytype);
+				}
+			}
+		}
 	}
 
 	////////
@@ -300,30 +326,36 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	else if (moment().isAfter('2020-08-18'))
 	{
 		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
-		$('.election-cal').clndr({
+		$('#election-cal').clndr({
 			template: $('#clndr-multimonth-template').html(),
 			startWithMonth: "2020-09-01",
 			showAdjacentMonths: false,
 			events: [
 				{
 					title: 'VBM ballots begin to arrive',
-					date: '2020-09-24'
+					date: '2020-09-24',
+					type: 'vbm'
 				}, {
 					title: 'Registration deadline',
-					date: '2020-10-05'
+					date: '2020-10-05',
+					type:  'registration'
 				}, {
 					title: 'Early Voting',
 					start: '2020-10-19',
-					end:   '2020-11-01'
+					end:   '2020-11-01',
+					type:  "early-voting"
 				}, {
 					title: 'Deadline to return VBM ballot',
-					date: '2020-11-01'
+					date: '2020-11-01',
+					type: 'vbm'
 				}, {
 					title: 'Deadline to request VBM ballot, in person',
-					date: '2020-10-31'
+					date: '2020-10-31',
+					type: 'vbm'
 				}, {
 					title: 'Election Day!',
-					date: '2020-11-03'
+					date: '2020-11-03',
+					type: 'election'
 				}
 			],
 			multiDayEvents: {
@@ -335,7 +367,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			},
 			clickEvents: {
 				click: clickElectionEvent
-			}
+			},
+			doneRendering: doneRendering
 	  });
 	}
 
@@ -349,24 +382,31 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			startWithMonth: "2020-06-01",
 			events: [
 				{
-					title: 'VBM ballots arrive',
-					date: '2020-06-30' // ???
+					// Next day after ballots begin to be sent
+					title: 'VBM ballots begin to arrive',
+					date: '2020-06-25',
+					type: 'vbm'
 				}, {
 					title: 'Registration deadline',
-					date: '2020-07-20'
+					date:  '2020-07-20',
+					type:  'registration'
 				}, {
 					title: 'Early Voting',
 					start: '2020-08-08',
-					end:   '2020-08-15'
+					end:   '2020-08-15',
+					type:  "early-voting" 
 				}, {
 					title: 'Deadline to request VBM ballot, in person',
-					date: '2020-08-15'
+					date: '2020-08-15',
+					type: 'vbm'
 				}, {
 					title: 'Deadline to return VBM ballot',
-					date: '2020-08-16'
+					date: '2020-08-16',
+					type: 'vbm'
 				}, {
 					title: 'Election Day!',
-					date: '2020-08-18'
+					date: '2020-08-18',
+					type: 'election'
 				}
 			],
 			multiDayEvents: {
@@ -381,7 +421,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			},
 			clickEvents: {
 				click: clickElectionEvent
-			}
+			},
+			doneRendering: doneRendering
 	  });
 	}
 });
@@ -390,6 +431,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 </script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore-min.js" integrity="sha256-av1TvywtZ4ZqyCj/6HdtCHSJdn80HAzTgEBTJt/O8uc=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha256-ZsWP0vT+akWmvEMkNYgZrPHKU9Ke8nYBPC3dqONp1mY=" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-range/4.0.2/moment-range.js" integrity="sha256-bB6c2ZfNzG6Tv8MSu/pqUl0y91h86M/T+1w0WrCZhGw=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/clndr/1.5.1/clndr.min.js" integrity="sha256-5l9tTVIIDLb0zGv9g1ntQ+L2tuJyfH+bhwRn8ATus4c=" crossorigin="anonymous"></script>
 	</body>
 </html>
