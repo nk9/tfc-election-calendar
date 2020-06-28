@@ -379,25 +379,6 @@ strong {
   pre[class*="language-"] {
     font-size: 14px;
   }
-  #clndr-4 .day,
-  #clndr-4 .clndr-next-button,
-  #clndr-4 .clndr-previous-button {
-    height: 100px;
-  }
-  #clndr-4 .clndr-next-button,
-  #clndr-4 .clndr-previous-button {
-    padding-top: 30px;
-  }
-  #clndr-4 .events {
-    margin-top: 0.1em;
-  }
-  #clndr-4 .event-listing {
-    width: 1px;
-    height: 1px;
-  }
-  #clndr-4 .event-listing-title {
-    display: none;
-  }
 }
 </style>
 
@@ -405,65 +386,82 @@ strong {
 
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(event) {
-	if (moment().isAfter('2020-08-18')) {
+	function clickElectionEvent(target) {
+		console.log("clicked ", target);
+	}
+
+	if (moment().isAfter('2020-11-03')) {
+		// Post-General
+		// A "thanks for your support" message? Or just nothing?
+	} else if (moment().isAfter('2020-08-18')) {
 		//
 		// General calendar
 		//
+
+		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
 		$('.election-cal').clndr({
 			startWithMonth: "2020-09-01",
-			events: [{
-						title: 'VBM ballots begin to arrive',
-						date: '2020-09-24'
-					},{
-						title: 'Registration deadline',
-						date: '2020-10-05'
-					},{
-						title: 'Election Day!',
-						date: '2020-11-03'
-					},{
-						title: 'Deadline to return VBM ballot',
-						date: '2020-11-01'
-					},{
-						title: 'Deadline to request VBM ballot, in person',
-						date: '2020-10-31'
-					}
+			events: [
+				{
+					title: 'VBM ballots begin to arrive',
+					date: '2020-09-24'
+				}, {
+					title: 'Registration deadline',
+					date: '2020-10-05'
+				}, {
+					title: 'Early Voting',
+					start: '2020-10-19',
+					end:   '2020-11-01'
+				}, {
+					title: 'Deadline to return VBM ballot',
+					date: '2020-11-01'
+				}, {
+					title: 'Deadline to request VBM ballot, in person',
+					date: '2020-10-31'
+				}, {
+					title: 'Election Day!',
+					date: '2020-11-03'
+				}
 			],
 			multiDayEvents: {
-				// Surely this is wrong??
-				startDate: '2020-10-05',
-				endDate:   '2020-11-01'
+				startDate: 'start',
+				endDate:   'end'
 			},
 			lengthOfTime: {
 				months: 3
+			},
+			clickEvents: {
+				click: clickElectionEvent
 			}
 	  });
-	} else if (moment().isAfter('2020-11-03')) {
+	} else {
 		//
 		// Primary calendar
 		//
 		$('#election-cal').clndr({
 	        template: $('#clndr-multimonth-template').html(),
 			startWithMonth: "2020-06-01",
-			events: [{
-						title: 'VBM ballots arrive',
-						date: '2020-06-30' // ???
-					},{
-						title: 'Election Day!',
-						date: '2020-08-18'
-					},{
-						title: 'Registration deadline',
-						date: '2020-07-20'
-					},{
-						title: 'Deadline to request VBM ballot, in person',
-						date: '2020-08-15'
-					},{
-						title: 'Deadline to return VBM ballot',
-						date: '2020-08-16'
-					}, {
-						start: '2020-08-08',
-						end:   '2020-08-15',
-						title: 'Early Voting'
-					}
+			events: [
+				{
+					title: 'VBM ballots arrive',
+					date: '2020-06-30' // ???
+				}, {
+					title: 'Registration deadline',
+					date: '2020-07-20'
+				}, {
+					title: 'Early Voting',
+					start: '2020-08-08',
+					end:   '2020-08-15'
+				}, {
+					title: 'Deadline to request VBM ballot, in person',
+					date: '2020-08-15'
+				}, {
+					title: 'Deadline to return VBM ballot',
+					date: '2020-08-16'
+				}, {
+					title: 'Election Day!',
+					date: '2020-08-18'
+				}
 			],
 			multiDayEvents: {
 				startDate: 'start',
@@ -474,14 +472,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				interval: 1,
 				startDate: '2020-06-01'
 			},
-			constraints: {
-				startDate: '2020-06-01',
-				endDate:   '2020-08-31'
+			clickEvents: {
+				click: clickElectionEvent
 			}
 	  });
-	} else {
-		// Post-General
-		// A "thanks for your support" message? Or just nothing?
 	}
 });
 </script>
@@ -504,7 +498,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
             </div>
         </div>
     </div>
-    <div class="clndr-today-button">Today</div>
     <% }); %>
 </script>
 
