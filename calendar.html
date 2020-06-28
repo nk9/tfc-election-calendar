@@ -39,18 +39,26 @@
 	</div>
 	<% }); %>
 	<div class="flex-item events">
-		<% _.each(eventsThisInterval, function(month) {
+		<% var seenEarlyVoting = false;
+			_.each(eventsThisInterval, function(month) {
 			_.each(month, function(event) {
 				if (event.date) { %>
 				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.date).format('YYYY-MM-DD') %>">
 					<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
-				<% } else { %>
-				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.start).format('YYYY-MM-DD') %>">
-					<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('Do') %></div>
-				<% } %>
 					<div class="event-item-title"><%= event.title %></div>
 					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
+				<% } else if (!seenEarlyVoting) { %>
+				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.start).format('YYYY-MM-DD') %>">
+					<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('MMM Do') %></div>
+					<div class="event-item-title"><%= event.title %></div>
+					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
+				</div>
+				<%
+					// In the general, early voting stops in November. Helpfully, CLNDR returns the event
+					// twice, once for Oct and again for Nov. So we have to ignore the second one.
+					seenEarlyVoting = true;
+				} %>
 			<% });
 		}); %>
 	</div>
@@ -76,9 +84,11 @@
 #election-cal .clndr {
 	max-width: 59rem;
 	margin: auto;
+	
 	/* Flex */
 	display: flex;
 	align-content: flex-start;
+	justify-content: center;
 	flex-wrap: wrap;
 }
 #election-cal .clndr .month {
@@ -183,10 +193,10 @@
 	width: 100%;
 
 	display: flex;
-	flex-direction: column;
+	/*flex-direction: column;*/
 }
 .event-item {
-	width: 19rem;
+	width: 16rem;
 	padding: .5rem;
 }
 .event-item-date {
@@ -282,73 +292,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	}
 
 	////////
-	// Post-General calendar
+	// Setup options
 	////////
-	if (moment().isAfter('2020-11-03'))
-	{
-		// A "thanks for your support" message? Or just nothing?
-	}
-
-	////////
-	// General calendar
-	////////
-	else if (moment().isAfter('2020-08-18'))
-	{
-		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
-		$('#election-cal').clndr({
-			template: $('#clndr-multimonth-template').html(),
-			startWithMonth: "2020-09-01",
-			showAdjacentMonths: false,
-	events: [
-		{
-			title: "VBM ballots begin to arrive",
-			date: "2020-09-24",
-			type: "vbm"
-		}, {
-			title: "Registration deadline",
-			date: "2020-10-05",
-			type:  "registration"
-		}, {
-					title: "Early voting period",
-					start: "2020-10-19",
-					end:   "2020-11-01",
-					type:  "early-voting"
-				}, {
-					title: "Deadline to return VBM ballot",
-					date: "2020-11-01",
-					type: "vbm"
-				}, {
-					title: "Deadline to request VBM ballot, in person",
-					date: "2020-10-31",
-					type: "vbm"
-				}, {
-					title: "Election Day!",
-					date: "2020-11-03",
-					type: "election"
-				}
-			],
-			multiDayEvents: {
-				startDate: "start",
-				endDate:   "end"
-			},
-			lengthOfTime: {
-				months: 3,
-				interval: 3,
-				startDate: "2020-09-01"
-			},
-			clickEvents: {
-				click: clickElectionEvent
-			},
-			doneRendering: doneRendering,
-			ready: readyHandler
-		});
-	}
-
-	////////
-	// Primary calendar
-	////////
-	else {
-		$('#election-cal').clndr({
+	var clndrOptions = {
 			template: $('#clndr-multimonth-template').html(),
 			showAdjacentMonths: false,
 			startWithMonth: "2020-06-01",
@@ -357,28 +303,34 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					// Next day after ballots begin to be sent
 					title: "VBM ballots begin to arrive",
 					date: "2020-06-25",
-					type: "vbm"
+					type: "vbm",
+					link: "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm"
 				}, {
 					title: "Registration deadline",
 					date:  "2020-07-20",
-					type:  "registration"
+					type:  "registration",
+					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm"
 				}, {
 					title: "Early Voting",
 					start: "2020-08-08",
 					end:   "2020-08-15",
-					type:  "early-voting" 
+					type:  "early-voting",
+					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm"
 				}, {
 					title: "Deadline to request VBM ballot, in person",
 					date: "2020-08-15",
-					type: "vbm"
+					type: "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm"
 				}, {
 					title: "Deadline to return VBM ballot",
 					date: "2020-08-16",
-					type: "vbm"
+					type: "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm"
 				}, {
 					title: "Election Day!",
 					date: "2020-08-18",
-					type: "election"
+					type: "election",
+					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html"
 				}
 			],
 			multiDayEvents: {
@@ -396,7 +348,43 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			},
 			doneRendering: doneRendering,
 			ready: readyHandler
-	  });
+	  };
+
+	////////
+	// Post-General calendar
+	////////
+	if (moment().isAfter('2020-11-03'))
+	{
+		// A "thanks for your support" message? Or just nothing?
+	}
+
+	////////
+	// General calendar
+	////////
+	else if (moment().isAfter('2020-08-18'))
+	{
+		// Fix up dates for the general
+		clndrOptions.events[0].date = "2020-09-24";
+		clndrOptions.events[1].date = "2020-10-05";
+		clndrOptions.events[2].start = "2020-10-19";
+		clndrOptions.events[2].end = "2020-11-01";
+		clndrOptions.events[3].date = "2020-11-01";
+		clndrOptions.events[4].date = "2020-10-31";
+		clndrOptions.events[5].date = "2020-11-03";
+
+		clndrOptions.startWithMonth = "2020-09-01";
+		clndrOptions.lengthOfTime.startDate = "2020-09-01";
+
+		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
+		$('#election-cal').clndr(clndrOptions);
+
+	}
+
+	////////
+	// Primary calendar
+	////////
+	else {
+		$('#election-cal').clndr(clndrOptions);
 	}
 });
 </script>
