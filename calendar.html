@@ -140,8 +140,7 @@
 #election-cal .clndr .days-container .days .day,
 #election-cal .clndr .days-container .days .empty {
 	width: 40px;
-	padding-top: 8px;
-	padding-bottom: 8px;
+	height: 31px;
 	font-size: 12px;
 	text-align: center;
 	color: #212121;
@@ -149,6 +148,9 @@
 	border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 
 	flex: 1 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 #election-cal .clndr .days-container .days .day.today {
 	border: 1px solid black;
@@ -156,7 +158,7 @@
 }
 #election-cal .clndr .days-container .days .day.event,
 #election-cal .clndr .days-container .days .empty.event {
-	background-color: #d2d2d2;
+	background-color: #f5f5f5;
 	-webkit-transition: background-color 0.5s;
 	-moz-transition: background-color 0.5s;
 	-ms-transition: background-color 0.5s;
@@ -180,10 +182,6 @@
 #election-cal .clndr .days-container .days .empty.event:hover {
 	background-color: #b8b8b8;
 }
-#election-cal .clndr .days-container .days .day.adjacent-month,
-#election-cal .clndr .days-container .days .empty.adjacent-month {
-	color: rgba(0, 0, 0, 0.3);
-}
 #election-cal .clndr .days-container .days .empty {
 	height: 31px;
 	vertical-align: bottom;
@@ -206,6 +204,7 @@
 
 	display: flex;
 	/*flex-direction: column;*/
+	justify-content: center;
 }
 .event-item {
 	width: 16rem;
@@ -267,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				dayEl.addClass(mytype);
 
 				if (event.icon) {
-					dayEl.append('<span class="icon">X</span>');
+					dayEl.append(`<span class="icon">${event.icon}</span>`);
 				} else {
 					dayEl.find('.number').removeClass('number');
 				}
@@ -286,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					dayEl.addClass(mytype);
 
 					if (event.icon) {
-						dayEl.append('<span class="icon">X</span>');
+						dayEl.append(`<span class="icon">${event.icon}</span>`);
 					} else {
 						dayEl.find('.number').removeClass('number');
 					}
@@ -330,14 +329,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				{
 					// Next day after ballots begin to be sent
 					title: "VBM ballots begin to arrive",
-					date: "2020-06-25",
-					type: "vbm",
-					link: "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm"
+					date:  "2020-06-25",
+					type:  "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
+					icon:  "\u{1F4E9}"
 				}, {
 					title: "Registration deadline",
 					date:  "2020-07-20",
 					type:  "registration",
-					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm"
+					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm",
+					icon:  "\u{270D}"
 				}, {
 					title: "Early Voting",
 					start: "2020-08-08",
@@ -346,20 +347,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm"
 				}, {
 					title: "Deadline to request VBM ballot, in person",
-					date: "2020-08-15",
-					type: "vbm",
+					date:  "2020-08-15",
+					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm"
 				}, {
 					title: "Deadline to return VBM ballot",
-					date: "2020-08-16",
-					type: "vbm",
-					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm"
+					date:  "2020-08-16",
+					type:  "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
+					icon:  "\u{1F4EE}"
 				}, {
 					title: "Election Day!",
 					date:  "2020-08-18",
 					type:  "election",
 					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
-					icon:  "\u1F5F3", 
+					icon:  "\u{1F5F3}", 
 				}
 			],
 			multiDayEvents: {
