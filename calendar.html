@@ -41,10 +41,9 @@
 	<div class="flex-item events">
 		<% _.each(eventsThisInterval, function(month) {
 			_.each(month, function(event) { %>
-				<div class="event-item <%= event.type %>">
+				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.date).format('YYYY-MM-DD') %>">
 					<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
 					<div class="event-item-title"><%= event.title %></div>
-					<div class="event-item-description"><%= event.description %></div>
 					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
 			<% });
@@ -178,6 +177,9 @@
 	width: 10rem;
 	height: 10rem;
 }
+#election-cal .clndr .events .active-event {
+	background-color: #EE9295;
+}
 * {
 	margin: 0;
 	box-sizing: border-box;
@@ -242,11 +244,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	function readyHandler() {
 		var self = this;
-		$(this.element).on('mouseover', '.day', function(e) {
+		$(this.element).on('mouseenter', '.day', function(e) {
 			var target = self.buildTargetObject(e.currentTarget, true);
 			if (target.events.length) {
 				for (let event of target.events) {
-					console.log(event.title);
+					console.log("mouseover " + this.element);
+					var event_item_class = 'event-item-'+moment(event.date).format('YYYY-MM-DD');
+					$(`.${event_item_class}`).addClass('active-event');
+				}
+			}
+		});
+		$(this.element).on('mouseleave', '.day', function(e) {
+			var target = self.buildTargetObject(e.currentTarget, true);
+			if (target.events.length) {
+				for (let event of target.events) {
+					console.log("mouseout " + this.element);
+					var event_item_class = 'event-item-'+moment(event.date).format('YYYY-MM-DD');
+					$(`.${event_item_class}`).removeClass('active-event');
 				}
 			}
 		});
