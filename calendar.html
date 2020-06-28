@@ -13,20 +13,14 @@
 	</head>
 	<body>
 		<!-- Add your site or application content here -->
-		<p>Hello world! This is HTML5 Boilerplate.</p>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
-<!--         <script src="js/plugins.js"></script>
-		<script src="js/main.js"></script>
- -->
-
-
 
 
  <!-- Election Calendar Template -->
  <script type="text/template" id="clndr-multimonth-template">
 	<% _.each(months, function (oneMonth) { %>
-	<div class="month">
+	<div class="flex-item month">
 		<div class="controls">
 			<div class="month-header"><%= oneMonth.month.format('MMMM YYYY') %></div>
 		</div>
@@ -44,6 +38,18 @@
 		</div>
 	</div>
 	<% }); %>
+	<div class="flex-item events">
+		<% _.each(eventsThisInterval, function(month) {
+			_.each(month, function(event) { %>
+				<div class="event-item <%= event.type %>">
+					<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
+					<div class="event-item-title"><%= event.title %></div>
+					<div class="event-item-description"><%= event.description %></div>
+					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
+				</div>
+			<% });
+		}); %>
+	</div>
 </script>
 
 <style type="text/css" id="less:CLNDR-css-clndr">@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
@@ -70,10 +76,11 @@
 	flex-wrap: wrap;
 }
 #election-cal .clndr .month {
-	width: 294px;
+	width: 280px;
 	flex: 0 1 auto;
 	margin: 1rem;
-
+}
+#election-cal .clndr .flex-item {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-start;
@@ -81,8 +88,8 @@
 }
 #election-cal .clndr .controls {
 	width: 100%;
-	background-color: #69a776;
-	color: white;
+	background-color: clear;
+	color: black;
 }
 
 #election-cal .clndr .controls .month-header {
@@ -90,12 +97,11 @@
 	padding-top: 5px;
 	padding-bottom: 5px;
 	text-align: center;
-	text-transform: uppercase;
-	font-weight: 700;
+	/*text-transform: uppercase;*/
+	font-weight: 500;
 	letter-spacing: 1px;
 }
 #election-cal .clndr .days-container {
-	position: relative;
 	width: 100%;
 	/*height: 213px;*/
 	flex: 1;
@@ -117,7 +123,7 @@
 }
 #election-cal .clndr .days-container .days .day,
 #election-cal .clndr .days-container .days .empty {
-	width: 42px;
+	width: 40px;
 	padding-top: 8px;
 	padding-bottom: 8px;
 	font-size: 12px;
@@ -136,7 +142,7 @@
 	-ms-transition: background-color 0.5s;
 	-o-transition: background-color 0.5s;
 	transition: background-color 0.5s;
-	cursor: pointer;
+	/*cursor: pointer;*/
 }
 #election-cal .clndr .days-container .days .day.event:hover,
 #election-cal .clndr .days-container .days .empty.event:hover {
@@ -151,24 +157,31 @@
 	vertical-align: bottom;
 }
 #election-cal .clndr .days-container .days .headers {
-	background-color: #97ce7f;
+	background-color: #3883A3;
 	padding-top: 5px;
 	padding-bottom: 5px;
 
 	display: flex;
 }
 #election-cal .clndr .days-container .days .headers .day-header {
-	width: 42px;
+	width: 40px;
 	display: inline-block;
 	text-align: center;
 	color: white;
-
-	flex: 
 }
-#election-cal .clndr .days-container .events {
+#election-cal .clndr .events {
+	width: 100%;
+
+	display: flex;
+}
+#election-cal .clndr .events .event-item {
+	width: 10rem;
+	height: 10rem;
+}
+/*#election-cal .clndr .days-container .events {
 	position: absolute;
-	left: 294px;
-	width: 294px;
+	left: 280px;
+	width: 280px;
 	height: 217px;
 	-webkit-transition: left 0.5s;
 	-moz-transition: left 0.5s;
@@ -239,11 +252,11 @@
 	color: #69a776;
 }
 #election-cal .clndr .days-container.show-events .days {
-	left: -294px;
+	left: -280px;
 }
 #election-cal .clndr .days-container.show-events .events {
 	left: 0;
-}
+}*/
 * {
 	margin: 0;
 	box-sizing: border-box;
@@ -257,13 +270,6 @@ body {
 }
 
 @media all and (max-width: 768px) {
-	#full-clndr .clndr-grid {
-		width: 100%;
-		border: none;
-	}
-	#full-clndr .event-listing {
-		display: none;
-	}
 	h1.banner-text {
 		font-size: 28px;
 	}
@@ -290,16 +296,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	}
 
 	function doneRendering() {
-	// Add event type classes
+		// Add event type classes
+		// https://github.com/kylestetz/CLNDR/issues/335#issuecomment-650769056
 		for (let event of this.options.events) {
-		// Single-day events
+			// Single-day events
 			if (event.date) {
 				mydate = event.date;
 				mytype = event.type;
 				$('.day.calendar-day-'+mydate+'').addClass(mytype);
 			}
 
-		// Multi-day events
+			// Multi-day events
 			else {
 				const range = moment.range(event.start, event.end);
 
@@ -310,6 +317,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				}
 			}
 		}
+	}
+
+	function readyHandler() {
+		var self = this;
+		$(this.element).on('mouseover', '.day', function(e) {
+			var target = self.buildTargetObject(e.currentTarget, true);
+			if (target.events.length) {
+				for (let event of target.events) {
+					console.log(event.title);
+				}
+			}
+		});
 	}
 
 	////////
@@ -340,11 +359,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			date: "2020-10-05",
 			type:  "registration"
 		}, {
-			title: "Early Voting",
-			start: "2020-10-19",
-			end:   "2020-11-01",
-			type:  "early-voting"
-		}, {
+					title: "Early Voting",
+					start: "2020-10-19",
+					end:   "2020-11-01",
+					type:  "early-voting"
+				}, {
 					title: "Deadline to return VBM ballot",
 					date: "2020-11-01",
 					type: "vbm"
@@ -363,13 +382,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				endDate:   "end"
 			},
 			lengthOfTime: {
-				months: 3
+				months: 3,
+				interval: 3,
+				startDate: "2020-09-01"
 			},
 			clickEvents: {
 				click: clickElectionEvent
 			},
-			doneRendering: doneRendering
-	  });
+			doneRendering: doneRendering,
+			ready: readyHandler
+		});
 	}
 
 	////////
@@ -416,13 +438,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			},
 			lengthOfTime: {
 				months: 3,
-				interval: 1,
+				interval: 3,
 				startDate: "2020-06-01"
 			},
 			clickEvents: {
 				click: clickElectionEvent
 			},
-			doneRendering: doneRendering
+			doneRendering: doneRendering,
+			ready: readyHandler
 	  });
 	}
 });
