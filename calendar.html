@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			multiDayEvents: {
 				startDate: "start",
 				endDate:   "end",
-			    singleDay: "date"
+				singleDay: "date"
 			},
 			lengthOfTime: {
 				months: 3,
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			},
 			doneRendering: doneRendering,
 			ready: readyHandler
-	  };
+		};
 
 	// 
 	// Post-General calendar
@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 #election-cal .clndr .month {
 	width: 280px;
 	flex: 0 1 auto;
-	margin: 1rem;
+	margin: 0 1rem;
 }
 #election-cal .clndr .flex-item {
 	display: flex;
@@ -431,7 +431,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 #election-cal .clndr .events {
 	width: 100%;
-
+	margin-top: 1rem;
+	
 	display: flex;
 	/*flex-direction: column;*/
 	justify-content: center;
