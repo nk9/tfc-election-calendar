@@ -9,15 +9,221 @@
 
 		<link rel="manifest" href="site.webmanifest">
 		<link rel="apple-touch-icon" href="icon.png">
+		<style>
+		.has-blue-background-color {
+			background-color: #114984;
+		}
+		</style>
 		<!-- Place favicon.ico in the root directory -->
 	</head>
 	<body>
-		<!-- Add your site or application content here -->
-		<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-		<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
+<!--
+
+	WELCOME TO THE ELECTION CALENDAR WIDGET
+
+	Use this code to drop a 3-month calendar into your election page. To use, copy everything
+	*inside* the <body> tag, all 400+ lines of it. Create a Custom HTML element on a page in
+	your site. Then just whack everything in there. Click Update, and you're done.
+
+	You will want to edit the events array just below here to contain all of the relevant
+	election dates and deadlines for your jurisdiction. Then you'll probably want to tweak
+	the colors in the <style> section toward the bottom.
+-->
+
+<!-- Election Calendar div -->
+<div id="election-cal"></div>
 
 
- <!-- Election Calendar Template -->
+<!-- Create Election Calendar Javascript -->
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function(event) {
+	// Setup options
+	// Primary by default
+	
+	var clndrOptions = {
+			template: $('#clndr-multimonth-template').html(),
+			showAdjacentMonths: false,
+			startWithMonth: "2020-06-01",
+			events: [
+				{
+					// Next day after ballots begin to be sent
+					title: "VBM ballots begin to arrive",
+					date:  "2020-06-25",
+					type:  "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
+					icon:  '<i class="fas fa-envelope-open-text"></i>'
+				}, {
+					title: "Deadline to register",
+					date:  "2020-07-20",
+					type:  "registration",
+					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm",
+					icon:  '<i class="fas fa-landmark"></i>'
+				}, {
+					title: "Early Voting",
+					start: "2020-08-08",
+					end:   "2020-08-15",
+					type:  "early-voting",
+					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
+					icon:  '<i class="fas fa-clock"></i>'
+				}, {
+					title: "Deadline to request VBM ballot, in person",
+					date:  "2020-08-15",
+					type:  "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
+					icon:  '<i class="fas fa-landmark"></i>'
+				}, {
+					title: "Deadline to return VBM ballot",
+					date:  "2020-08-16",
+					type:  "vbm",
+					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm",
+					icon:  '<i class="fas fa-inbox"></i>'
+				}, {
+					title: "Election Day!",
+					date:  "2020-08-18",
+					type:  "election",
+					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
+					icon:  '<i class="fas fa-check-square"></i>'
+				}
+			],
+			multiDayEvents: {
+				startDate: "start",
+				endDate:   "end",
+			    singleDay: "date"
+			},
+			lengthOfTime: {
+				months: 3,
+				interval: 3,
+				startDate: "2020-06-01"
+			},
+			clickEvents: {
+				click: clickElectionEvent
+			},
+			doneRendering: doneRendering,
+			ready: readyHandler
+	  };
+
+	// 
+	// Post-General calendar
+	// 
+	if (moment().isAfter('2020-11-03'))
+	{
+		// A "thanks for your support" message? Or just nothing?
+	}
+
+	// 
+	// General calendar
+	// 
+	else if (moment().isAfter('2020-08-18'))
+	{
+		/* Fix up dates for the general */
+		clndrOptions.events[0].date = "2020-09-24";  /* VBM starts arriving */
+		clndrOptions.events[1].date = "2020-10-05";  /* Registration deadline */
+		clndrOptions.events[2].start = "2020-10-19"; /* Early voting */
+		clndrOptions.events[2].end = "2020-11-01";   
+		clndrOptions.events[3].date = "2020-11-01";  /* VBM request deadline */
+		clndrOptions.events[4].date = "2020-10-31";  /* VBM return deadline */
+		clndrOptions.events[5].date = "2020-11-03";  /* Election day */
+
+		clndrOptions.startWithMonth =
+		clndrOptions.lengthOfTime.startDate = "2020-09-01";
+
+		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
+		$('#election-cal').clndr(clndrOptions);
+
+	}
+
+	// 
+	// Primary calendar
+	// 
+	else {
+		$('#election-cal').clndr(clndrOptions);
+	}
+
+
+	function clickElectionEvent(target) {
+		console.log("clicked ", target);
+		if (target.events) {
+			window.location = target.events[0].link;
+		}
+	}
+
+	function doneRendering() {
+		// Load the moment-range extension
+		window['moment-range'].extendMoment(moment);
+
+		// Add event type classes
+		// https://github.com/kylestetz/CLNDR/issues/335#issuecomment-650769056
+		
+		for (let event of this.options.events) {
+			// Single-day events
+			if (event.date) {
+				mydate = event.date;
+				mytype = event.type;
+				let dayEl = $('.day.calendar-day-'+mydate);
+				dayEl.addClass(mytype);
+
+				if (event.icon) {
+					dayEl.append(`<span class="icon">${event.icon}</span>`);
+					dayEl.addClass('has-icon');
+				}
+			}
+
+			// Multi-day events
+			else {
+				const range = moment.range(event.start, event.end);
+
+				for (let day of range.by('day')) {
+					mydate = day.format('YYYY-MM-DD');
+					mytype = event.type;
+
+					let dayEl = $('.day.calendar-day-'+mydate);
+					dayEl.addClass(mytype);
+				}
+					
+				// Add in the icon on the starting date
+				if (event.icon) {
+					let dayEl = $('.day.calendar-day-'+event.start);
+
+					dayEl.append(`<span class="icon">${event.icon}</span>`);
+					dayEl.addClass('has-icon');
+				}
+
+			}
+		}
+	}
+
+	function readyHandler() {
+		var self = this;
+		$(this.element).on('mouseenter', '.day', function(e) {
+			var target = self.buildTargetObject(e.currentTarget, true);
+			if (target.events.length) {
+				for (let event of target.events) {
+					var startdate = event.date ? event.date : event.start;
+					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
+					$(`.${event_item_class}`).addClass('active-event');
+				}
+			}
+		});
+		$(this.element).on('mouseleave', '.day', function(e) {
+			var target = self.buildTargetObject(e.currentTarget, true);
+			if (target.events.length) {
+				for (let event of target.events) {
+					var startdate = event.date ? event.date : event.start;
+					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
+					$(`.${event_item_class}`).removeClass('active-event');
+				}
+			}
+		});
+	}
+});
+</script>
+
+
+<!--
+	Election Calendar Template
+
+	This is the template used by CLNDR to generate the calendar.
+-->
  <script type="text/template" id="clndr-multimonth-template">
  	<div class="months-scroller">
  	<div class="months-container">
@@ -28,7 +234,7 @@
 		</div>
 		<div class="days-container">
 			<div class="days">
-				<div class="headers">
+				<div class="headers has-blue-background-color">
 				<% _.each(daysOfTheWeek, function (day) { %>
 					<div class="day-header"><%= day %></div>
 				<% }); %>
@@ -68,6 +274,14 @@
 	</div>
 </script>
 
+
+
+
+<!--
+	Election Calendar CSS
+
+	Heavily modified from the example on the CLNDR site.
+-->
 <style type="text/css" id="less:CLNDR-css-clndr">@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
 
 @import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);.noselect {
@@ -190,6 +404,7 @@
 }
 #election-cal .clndr .days-container .days .day.event .icon {
 	display: inline-block;
+	font-size: 14pt;
 }
 #election-cal .clndr .days-container .days .day.event:hover .icon {
 	display: none;
@@ -203,7 +418,6 @@
 	vertical-align: bottom;
 }
 #election-cal .clndr .days-container .days .headers {
-	background-color: #3883A3;
 	padding-top: 5px;
 	padding-bottom: 5px;
 
@@ -240,188 +454,23 @@
 }
 </style>
 
-<div id="election-cal"></div>
 
-<script type="text/javascript">
-document.addEventListener("DOMContentLoaded", function(event) {
-	// Load the moment-range extension
-	window['moment-range'].extendMoment(moment);
 
-	function clickElectionEvent(target) {
-		console.log("clicked ", target);
-		if (target.events) {
-			window.location = target.events[0].link;
-		}
-	}
+<!--
+	Dependencies
+-->
 
-	function doneRendering() {
-		// Add event type classes
-		// https://github.com/kylestetz/CLNDR/issues/335#issuecomment-650769056
-		for (let event of this.options.events) {
-			// Single-day events
-			if (event.date) {
-				mydate = event.date;
-				mytype = event.type;
-				let dayEl = $('.day.calendar-day-'+mydate);
-				dayEl.addClass(mytype);
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-3.2.1.min.js"><\/script>')</script>
 
-				if (event.icon) {
-					dayEl.append(`<span class="icon">${event.icon}</span>`);
-					dayEl.addClass('has-icon');
-				}
-			}
+<!-- Various other libraries needed by the above JS code. Order matters. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore-min.js" integrity="sha256-av1TvywtZ4ZqyCj/6HdtCHSJdn80HAzTgEBTJt/O8uc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha256-ZsWP0vT+akWmvEMkNYgZrPHKU9Ke8nYBPC3dqONp1mY=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-range/4.0.2/moment-range.js" integrity="sha256-bB6c2ZfNzG6Tv8MSu/pqUl0y91h86M/T+1w0WrCZhGw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clndr/1.5.1/clndr.min.js" integrity="sha256-5l9tTVIIDLb0zGv9g1ntQ+L2tuJyfH+bhwRn8ATus4c=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" integrity="sha256-2XFplPlrFClt0bIdPgpz8H7ojnk10H69xRqd9+uTShA=" crossorigin="anonymous" />
 
-			// Multi-day events
-			else {
-				const range = moment.range(event.start, event.end);
 
-				for (let day of range.by('day')) {
-					mydate = day.format('YYYY-MM-DD');
-					mytype = event.type;
-					
-					// Add in the icon
-					let dayEl = $('.day.calendar-day-'+mydate);
-					dayEl.addClass(mytype);
-
-					if (event.icon) {
-						dayEl.append(`<span class="icon">${event.icon}</span>`);
-						dayel.addClass('has-icon');
-					}
-				}
-			}
-		}
-	}
-
-	function readyHandler() {
-		var self = this;
-		$(this.element).on('mouseenter', '.day', function(e) {
-			var target = self.buildTargetObject(e.currentTarget, true);
-			if (target.events.length) {
-				for (let event of target.events) {
-					var startdate = event.date ? event.date : event.start;
-					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
-					$(`.${event_item_class}`).addClass('active-event');
-				}
-			}
-		});
-		$(this.element).on('mouseleave', '.day', function(e) {
-			var target = self.buildTargetObject(e.currentTarget, true);
-			if (target.events.length) {
-				for (let event of target.events) {
-					var startdate = event.date ? event.date : event.start;
-					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
-					$(`.${event_item_class}`).removeClass('active-event');
-				}
-			}
-		});
-	}
-
-	////////
-	// Setup options
-	////////
-	var clndrOptions = {
-			template: $('#clndr-multimonth-template').html(),
-			showAdjacentMonths: false,
-			startWithMonth: "2020-06-01",
-			events: [
-				{
-					// Next day after ballots begin to be sent
-					title: "VBM ballots begin to arrive",
-					date:  "2020-06-25",
-					type:  "vbm",
-					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
-					icon:  "\u{1F4E9}"
-				}, {
-					title: "Registration deadline",
-					date:  "2020-07-20",
-					type:  "registration",
-					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm",
-					icon:  "\u{270D}"
-				}, {
-					title: "Early Voting",
-					start: "2020-08-08",
-					end:   "2020-08-15",
-					type:  "early-voting",
-					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm"
-				}, {
-					title: "Deadline to request VBM ballot, in person",
-					date:  "2020-08-15",
-					type:  "vbm",
-					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm"
-				}, {
-					title: "Deadline to return VBM ballot",
-					date:  "2020-08-16",
-					type:  "vbm",
-					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
-					icon:  "\u{1F4EE}"
-				}, {
-					title: "Election Day!",
-					date:  "2020-08-18",
-					type:  "election",
-					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
-					icon:  "\u{1F5F3}", 
-				}
-			],
-			multiDayEvents: {
-				startDate: "start",
-				endDate:   "end",
-			    singleDay: "date"
-			},
-			lengthOfTime: {
-				months: 3,
-				interval: 3,
-				startDate: "2020-06-01"
-			},
-			clickEvents: {
-				click: clickElectionEvent
-			},
-			doneRendering: doneRendering,
-			ready: readyHandler
-	  };
-
-	////////
-	// Post-General calendar
-	////////
-	if (moment().isAfter('2020-11-03'))
-	{
-		// A "thanks for your support" message? Or just nothing?
-	}
-
-	////////
-	// General calendar
-	////////
-	else if (true) //(moment().isAfter('2020-08-18'))
-	{
-		// Fix up dates for the general
-		clndrOptions.events[0].date = "2020-09-24";  // VBM starts arriving
-		clndrOptions.events[1].date = "2020-10-05";  // Registration deadline
-		clndrOptions.events[2].start = "2020-10-19"; // Early voting
-		clndrOptions.events[2].end = "2020-11-01";   //
-		clndrOptions.events[3].date = "2020-11-01";  // VBM request deadline
-		clndrOptions.events[4].date = "2020-10-31";  // VBM return deadline
-		clndrOptions.events[5].date = "2020-11-03";  // Election day
-
-		clndrOptions.startWithMonth =
-		clndrOptions.lengthOfTime.startDate = "2020-09-01";
-
-		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
-		$('#election-cal').clndr(clndrOptions);
-
-	}
-
-	////////
-	// Primary calendar
-	////////
-	else {
-		$('#election-cal').clndr(clndrOptions);
-	}
-});
-</script>
-
-</script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore-min.js" integrity="sha256-av1TvywtZ4ZqyCj/6HdtCHSJdn80HAzTgEBTJt/O8uc=" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha256-ZsWP0vT+akWmvEMkNYgZrPHKU9Ke8nYBPC3dqONp1mY=" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-range/4.0.2/moment-range.js" integrity="sha256-bB6c2ZfNzG6Tv8MSu/pqUl0y91h86M/T+1w0WrCZhGw=" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/clndr/1.5.1/clndr.min.js" integrity="sha256-5l9tTVIIDLb0zGv9g1ntQ+L2tuJyfH+bhwRn8ATus4c=" crossorigin="anonymous"></script>
 	</body>
 </html>
