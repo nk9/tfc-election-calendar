@@ -10,6 +10,8 @@
 		<style>
 		body {
 			font-family: Helvetica, sans-serif;
+			font-size: 1rem;
+			line-height: 1.8rem;
 		}
 		.has-blue-background-color {
 			background-color: #114984;
@@ -456,11 +458,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 #election-cal .clndr .events {
 	width: 100%;
+	height: 17rem;
 	/*margin-top: 1rem;*/
 
 	display: flex;
-	/*flex-direction: column;*/
-	justify-content: center;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-content: flex-start;
 }
 .event-item {
 	width: 19.5rem;
@@ -476,10 +480,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	border-radius: 3px;
 }
 @media screen and (max-width: 400px) {
+	#election-cal .clndr .events {
+		height: auto;
+	}
 	#election-cal .clndr .events .active-event {
 		order: -1;
 	}
-
 	#election-cal .clndr .days-container .days .day.event a {
 		pointer-events: none;
 		text-decoration: none;
