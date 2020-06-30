@@ -65,14 +65,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm",
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
-					// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
-					title: "Early Voting",
-					start: "2020-10-19",
-					end:   "2020-11-01",
-					type:  "early-voting",
-					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
-					icon:  '<i class="fas fa-clock"></i>'
-				}, {
 					title: "Deadline to request VBM ballot, in person",
 					date:  "2020-11-01",
 					type:  "vbm",
@@ -90,6 +82,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					type:  "election",
 					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
 					icon:  '<i class="fas fa-vote-yea"></i>'
+				},
+
+				// Multi-day events need to come last to prevent CSS headaches
+				// They should also be non-overlapping!
+				{
+					// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
+					title: "Early Voting",
+					start: "2020-10-19",
+					end:   "2020-11-01",
+					type:  "early-voting",
+					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
+					icon:  '<i class="fas fa-clock"></i>'
 				}
 			],
 			multiDayEvents: {
@@ -135,21 +139,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 		clndrOptions.events[0].date  = "2020-06-25"; /* VBM starts arriving */
 		clndrOptions.events[1].date  = "2020-07-20"; /* Registration deadline */
-		clndrOptions.events[2].start = "2020-08-08"; /*   Early voting start */
-		clndrOptions.events[2].end   = "2020-08-15"; /*   Early voting end */  
-		clndrOptions.events[3].date  = "2020-08-15"; /* VBM request deadline */
-		clndrOptions.events[4].date  = "2020-08-16"; /* VBM return deadline */
-		clndrOptions.events[5].date  = "2020-08-18"; /* Election day */
+		clndrOptions.events[2].date  = "2020-08-15"; /* VBM request deadline */
+		clndrOptions.events[3].date  = "2020-08-16"; /* VBM return deadline */
+		clndrOptions.events[4].date  = "2020-08-18"; /* Election day */
+		clndrOptions.events[5].start = "2020-08-08"; /*   Early voting start */
+		clndrOptions.events[5].end   = "2020-08-15"; /*   Early voting end */  
 
 		$('#election-cal').clndr(clndrOptions);
 	}
 
 
 	function clickElectionEvent(target) {
-		console.log("clicked ", target);
-		if (target.events) {
-			window.location = target.events[0].link;
-		}
+		// Nothing to see here.
+		// if (target.events) {
+		// 	window.location = target.events[0].link;
+		// }
 	}
 
 	function doneRendering() {
@@ -171,6 +175,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					dayEl.append(`<span class="icon">${event.icon}</span>`);
 					dayEl.addClass('has-icon');
 				}
+
+				if (event.link) {
+					dayEl.wrapInner(`<a href="${event.link}"></a>`)
+				}
 			}
 
 			// Multi-day events
@@ -183,16 +191,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 					let dayEl = $('.day.calendar-day-'+mydate);
 					dayEl.addClass(mytype);
-				}
-					
-				// Add in the icon on the starting date
-				if (event.icon) {
-					let dayEl = $('.day.calendar-day-'+event.start);
 
-					dayEl.append(`<span class="icon">${event.icon}</span>`);
-					dayEl.addClass('has-icon');
-				}
+					// Add in the icon on the starting date
+					if (event.icon && mydate == event.start) {
+						dayEl.append(`<span class="icon">${event.icon}</span>`);
+						dayEl.addClass('has-icon');
+					}
 
+					if (event.link) {
+						dayEl.contents().not("a").wrapAll(`<a href="${event.link}"></a>`);
+					}
+				}
 			}
 		}
 	}
@@ -330,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 #election-cal .clndr .controls {
 	width: 100%;
-	background-color: clear;
+	background-color: white;
 	color: black;
 }
 
@@ -390,22 +399,30 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	transition: background-color 0.5s;
 	cursor: pointer;
 }
-#election-cal .clndr .days-container .days .day.event.has-icon .number {
+#election-cal .clndr .days-container .days .day.event.has-icon a .number {
 	display: none;
 }
-#election-cal .clndr .days-container .days .day.event.has-icon:hover .number {
+#election-cal .clndr .days-container .days .day.event.has-icon:hover a .number {
 	display: inline-block;
 }
-#election-cal .clndr .days-container .days .day.event .icon {
+#election-cal .clndr .days-container .days .day.event a .icon {
 	display: inline-block;
 	font-size: 14pt;
 }
-#election-cal .clndr .days-container .days .day.event:hover .icon {
+#election-cal .clndr .days-container .days .day.event:hover a .icon {
 	display: none;
 }
 #election-cal .clndr .days-container .days .day.event:hover,
 #election-cal .clndr .days-container .days .empty.event:hover {
 	background-color: #b8b8b8;
+}
+#election-cal .clndr .days-container .days .day.event a {
+	width: 100%;
+	height: 100%;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 #election-cal .clndr .days-container .days .empty {
 	height: 31px;
@@ -433,14 +450,26 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 .event-item {
 	width: 19.5rem;
-	padding: 0 1rem 1rem 1rem;
+	padding: 1rem;
+
+	border: 2px solid white;
 }
 .event-item-date {
 	font-weight: bold;
 }
 #election-cal .clndr .events .active-event {
-	background-color: #EE9295;
+	border: 2px solid #c21e2d;
 	border-radius: 3px;
+}
+@media screen and (max-width: 400px) {
+	#election-cal .clndr .events .active-event {
+		order: -1;
+	}
+
+	#election-cal .clndr .days-container .days .day.event a {
+		pointer-events: none;
+		text-decoration: none;
+	}
 }
 #election-cal * {
 	box-sizing: border-box;
