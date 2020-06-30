@@ -3,31 +3,37 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="x-ua-compatible" content="ie=edge">
-		<title></title>
+		<title>Election Calendar</title>
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<link rel="manifest" href="site.webmanifest">
-		<link rel="apple-touch-icon" href="icon.png">
 		<style>
+		body {
+			font-family: Helvetica, sans-serif;
+		}
 		.has-blue-background-color {
 			background-color: #114984;
 		}
 		</style>
-		<!-- Place favicon.ico in the root directory -->
 	</head>
 	<body>
 <!--
-
 	WELCOME TO THE ELECTION CALENDAR WIDGET
 
-	Use this code to drop a 3-month calendar into your election page. To use, copy everything
-	*inside* the <body> tag, all 400+ lines of it. Create a Custom HTML element on a page in
-	your site. Then just whack everything in there. Click Update, and you're done.
+	This code displays a 3-month calendar with key election dates. On
+	mobile, the 3 months stay horizontal and become scrollable while
+	the events become a vertical list.
 
-	You will want to edit the events array just below here to contain all of the relevant
-	election dates and deadlines for your jurisdiction. Then you'll probably want to tweak
-	the colors in the <style> section toward the bottom.
+	To use, copy everything *inside* the <body> tag, all 450+ lines of
+	it. Create a Custom HTML element on a page in your Wordpress site.
+	Then just paste it all in there. Click Update, and you're done.
+
+	You will want to edit the events array just below here to contain
+	all of the relevant election dates and deadlines for your
+	jurisdiction. Update the links to point to relevant pages of your
+	county clerk's site. Then change the startWithMonth and
+	lengthOfTime.startDate. Finally, you may want to tweak the colors
+	in the <style> section toward the bottom.
 -->
 
 <!-- Election Calendar div -->
@@ -37,49 +43,50 @@
 <!-- Create Election Calendar Javascript -->
 <script type="text/javascript">
 document.addEventListener("DOMContentLoaded", function(event) {
+
 	// Setup options
-	// Primary by default
-	
+	// General by default
 	var clndrOptions = {
 			template: $('#clndr-multimonth-template').html(),
 			showAdjacentMonths: false,
-			startWithMonth: "2020-06-01",
+			startWithMonth: "2020-09-01",
 			events: [
 				{
 					// Next day after ballots begin to be sent
 					title: "VBM ballots begin to arrive",
-					date:  "2020-06-25",
+					date:  "2020-09-24",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
 					icon:  '<i class="fas fa-envelope-open-text"></i>'
 				}, {
 					title: "Deadline to register",
-					date:  "2020-07-20",
+					date:  "2020-10-05",
 					type:  "registration",
 					link:  "http://www.volusiaelections.org/VoterRegistration/registrationdeadline.htm",
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
+					// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
 					title: "Early Voting",
-					start: "2020-08-08",
-					end:   "2020-08-15",
+					start: "2020-10-19",
+					end:   "2020-11-01",
 					type:  "early-voting",
 					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
 					icon:  '<i class="fas fa-clock"></i>'
 				}, {
 					title: "Deadline to request VBM ballot, in person",
-					date:  "2020-08-15",
+					date:  "2020-11-01",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
 					title: "Deadline to return VBM ballot",
-					date:  "2020-08-16",
+					date:  "2020-10-31",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm",
 					icon:  '<i class="fas fa-inbox"></i>'
 				}, {
 					title: "Election Day!",
-					date:  "2020-08-18",
+					date:  "2020-11-03",
 					type:  "election",
 					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
 					icon:  '<i class="fas fa-vote-yea"></i>'
@@ -93,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			lengthOfTime: {
 				months: 3,
 				interval: 3,
-				startDate: "2020-06-01"
+				startDate: "2020-09-01"
 			},
 			clickEvents: {
 				click: clickElectionEvent
@@ -105,37 +112,35 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	// 
 	// Post-General calendar
 	// 
-	if (moment().isAfter('2020-11-03'))
-	{
-		// A "thanks for your support" message? Or just nothing?
-	}
+	// if (moment().isAfter('2020-11-03'))
+	// {
+		// If you want to put a message up once the election is over, that goes here.
+	// } else
 
 	// 
 	// General calendar
 	// 
-	else if (moment().isAfter('2020-08-18'))
+	if (moment().isAfter('2020-08-18'))
 	{
-		/* Fix up dates for the general */
-		clndrOptions.events[0].date = "2020-09-24";  /* VBM starts arriving */
-		clndrOptions.events[1].date = "2020-10-05";  /* Registration deadline */
-		clndrOptions.events[2].start = "2020-10-19"; /* Early voting */
-		clndrOptions.events[2].end = "2020-11-01";   
-		clndrOptions.events[3].date = "2020-11-01";  /* VBM request deadline */
-		clndrOptions.events[4].date = "2020-10-31";  /* VBM return deadline */
-		clndrOptions.events[5].date = "2020-11-03";  /* Election day */
-
-		clndrOptions.startWithMonth =
-		clndrOptions.lengthOfTime.startDate = "2020-09-01";
-
-		// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
 		$('#election-cal').clndr(clndrOptions);
-
 	}
 
 	// 
 	// Primary calendar
 	// 
 	else {
+		/* Fix up dates for the general */
+		clndrOptions.startWithMonth         = "2020-06-01";
+		clndrOptions.lengthOfTime.startDate = "2020-06-01";
+
+		clndrOptions.events[0].date  = "2020-06-25"; /* VBM starts arriving */
+		clndrOptions.events[1].date  = "2020-07-20"; /* Registration deadline */
+		clndrOptions.events[2].start = "2020-08-08"; /*   Early voting start */
+		clndrOptions.events[2].end   = "2020-08-15"; /*   Early voting end */  
+		clndrOptions.events[3].date  = "2020-08-15"; /* VBM request deadline */
+		clndrOptions.events[4].date  = "2020-08-16"; /* VBM return deadline */
+		clndrOptions.events[5].date  = "2020-08-18"; /* Election day */
+
 		$('#election-cal').clndr(clndrOptions);
 	}
 
@@ -225,8 +230,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	This is the template used by CLNDR to generate the calendar.
 -->
  <script type="text/template" id="clndr-multimonth-template">
- 	<div class="months-scroller">
- 	<div class="months-container">
+	<div class="months-scroller">
+	<div class="months-container">
 	<% _.each(months, function (oneMonth) { %>
 	<div class="month">
 		<div class="controls">
@@ -282,22 +287,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	Heavily modified from the example on the CLNDR site.
 -->
-<style type="text/css" id="less:CLNDR-css-clndr">@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
-
-@import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);.noselect {
-  -webkit-user-select: none;
-  /* Chrome/Safari */
-
-  -moz-user-select: none;
-  /* Firefox */
-
-  -ms-user-select: none;
-  /* IE10+ */
-
-}
+<style type="text/css" id="less:CLNDR-css-clndr">
 #election-cal {
+/*	@import url(https://fonts.googleapis.com/css?family=Asap:400,700);
 	font-family: Asap, Helvetica, Arial;
-	margin: 0 auto;
+*/	margin: 0 auto;
 }
 #election-cal .clndr {
 	max-width: 59rem;
@@ -309,18 +303,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	justify-content: center;
 	flex-wrap: wrap;
 }
-/* Needed to fix the "missing last-item right padding" problem. See https://stackoverflow.com/a/26892899/1749551 */
+/*	Needed to fix the "missing last-item right padding" problem.
+	See https://stackoverflow.com/a/26892899/1749551 */
 #election-cal .clndr .months-scroller {
 	overflow-x: auto;
 	width: 100%;
 }
 #election-cal .clndr .months-container {
 	display: flex;
-    flex-direction: row;
-    box-sizing: border-box;
-    min-width: 100%;
+	flex-direction: row;
+	box-sizing: border-box;
+	min-width: 100%;
 	height: 17rem;
-    float: left;
+	float: left;
 }
 #election-cal .clndr .month {
 	width: 280px;
@@ -430,15 +425,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 #election-cal .clndr .events {
 	width: 100%;
-	margin-top: 1rem;
+	/*margin-top: 1rem;*/
 
 	display: flex;
 	/*flex-direction: column;*/
 	justify-content: center;
 }
 .event-item {
-	width: 16rem;
-	padding: .5rem;
+	width: 19.5rem;
+	padding: 0 1rem 1rem 1rem;
 }
 .event-item-date {
 	font-weight: bold;
@@ -447,7 +442,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	background-color: #EE9295;
 	border-radius: 3px;
 }
-* {
+#election-cal * {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
