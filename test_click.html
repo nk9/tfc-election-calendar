@@ -63,10 +63,11 @@ watchForHover()
 function interceptClickEvent(e) {
 	var href;
 	var target = e.target || e.srcElement;
-	if (target.tagName === 'SPAN') {
+
+	// Only intercept .number spans
+	if (target.tagName === 'SPAN' && target.classList.contains("number")) {
 		href = target.closest('a').getAttribute('href');
 
-        //put your logic here...
 		if (document.body.classList.contains('hasHover')) {
 			window.location = href;
 		} else {
