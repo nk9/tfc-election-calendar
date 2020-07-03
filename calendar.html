@@ -352,13 +352,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			_.each(month, function(event) {
 				if (event.date) { %>
 				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.date).format('YYYY-MM-DD') %>">
-					<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
+					<div class="event-header">
+						<div class="event-icon"><%= event.icon %></div>
+						<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
+					</div>
 					<div class="event-item-title"><%= event.title %></div>
 					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
 				<% } else if (!seenEarlyVoting) { %>
 				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.start).format('YYYY-MM-DD') %>">
-					<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('MMM Do') %></div>
+					<div class="event-header">
+						<div class="event-icon"><%= event.icon %></div>
+						<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('MMM Do') %></div>
+					</div>
 					<div class="event-item-title"><%= event.title %></div>
 					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
@@ -540,7 +546,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	border: 2px solid white;
 }
+.event-header {
+	display: flex;
+}
 .event-item-date {
+	margin-left: .5rem;
 	font-weight: bold;
 }
 #election-cal .clndr .events .active-event {
