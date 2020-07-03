@@ -532,8 +532,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
 }
 #election-cal .clndr .events {
 	width: 100%;
-	height: 18rem;
-	/*margin-top: 1rem;*/
 
 	display: flex;
 	flex-direction: column;
@@ -557,16 +555,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	border: 2px solid #c21e2d;
 	border-radius: 3px;
 }
-/* Phones */
-@media screen and (max-width: 481px) {
+
+/* Columns are 312px */
+/* Phones; 1 column */
+@media screen and (max-width: 613px) {
 	#election-cal .clndr .events {
 		height: auto;
-	}
-}
-/* Tablets and below */
-@media screen and (max-width: 768px) {
-	#election-cal .clndr .events {
-		height: 27rem;
 	}
 	#election-cal .clndr .events .active-event {
 		order: -1;
@@ -575,6 +569,19 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		pointer-events: none;
 		touch-action: none;
 		text-decoration: none;
+	}
+}
+/* Tablets; 2 columns */
+@media screen and (min-width: 614px) and (max-width: 935px) {
+	#election-cal .clndr .events {
+		height: 27rem;
+	}
+}
+
+/* Desktops; 3 columns */
+@media screen and (min-width: 936px) {
+	#election-cal .clndr .events {
+		height: 18rem;
 	}
 }
 #election-cal * {
