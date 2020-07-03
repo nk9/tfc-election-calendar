@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm",
 					icon:  '<i class="fas fa-inbox"></i>'
 				}, {
-					title: "Election Day (polls close at 7pm)",
+					title: "Primary Election Day (polls open 7&ndash;7)",
 					date:  "2020-11-03",
 					type:  "election",
 					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
@@ -245,6 +245,74 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			}
 		});
 	}
+
+	//
+	//
+	// Touch devices need to be handled specially. See this SO query
+	// for more: https://stackoverflow.com/questions/62706369
+	//
+	//
+
+	// Step 1
+	// Keep track of touch and hover events to determine if we're a
+	// touch device or not and set class accordingly.
+	// Taken from https://stackoverflow.com/a/30303898/1749551
+	function watchForHover() {
+	  // lastTouchTime is used for ignoring emulated mousemove events
+		let lastTouchTime = 0;
+
+		function enableHover() {
+			if (new Date() - lastTouchTime < 500) return;
+				document.body.classList.add('hasHover');
+		}
+
+		function disableHover() {
+			document.body.classList.remove('hasHover');
+		}
+
+		function updateLastTouchTime() {
+			lastTouchTime = new Date();
+		}
+
+		document.addEventListener('touchstart', updateLastTouchTime, true);
+		document.addEventListener('touchstart', disableHover, true);
+		document.addEventListener('mousemove', enableHover, true);
+
+		enableHover();
+	}
+
+	watchForHover();
+
+	// Step 2
+	// Intercept all click events and check for ones which we want to ignore.
+	// https://stackoverflow.com/a/33616981/1749551
+	function interceptClickEvent(e) {
+		var href;
+		var target = e.target || e.srcElement;
+
+		// Only intercept .number spans
+		if (target.tagName === 'SPAN' && target.classList.contains("number")) {
+			href = target.closest('a').getAttribute('href');
+
+	        // Check if we're on a desktop device with hover
+			if (document.body.classList.contains('hasHover')) {
+				// Yes? Carry on.
+				window.location = href;
+			} else {
+	        	// No? Ignore link click, just activate link element.
+				e.preventDefault();
+			}
+		}
+	}
+
+	// Step 3
+	// Listen for link click events at the document level
+	if (document.addEventListener) {
+		document.addEventListener('click', interceptClickEvent);
+	} else if (document.attachEvent) {
+		document.attachEvent('onclick', interceptClickEvent);
+	}
+
 });
 </script>
 
@@ -391,7 +459,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 #election-cal .clndr .days-container .days .empty {
 	width: 40px;
 	height: 31px;
-	font-size: 12px;
+	font-size: 16px;
 	text-align: center;
 	color: #212121;
 	border-right: 1px solid rgba(255, 255, 255, 0.5);
@@ -479,15 +547,23 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	border: 2px solid #c21e2d;
 	border-radius: 3px;
 }
-@media screen and (max-width: 400px) {
+/* Phones */
+@media screen and (max-width: 481px) {
 	#election-cal .clndr .events {
 		height: auto;
+	}
+}
+/* Tablets and below */
+@media screen and (max-width: 768px) {
+	#election-cal .clndr .events {
+		height: 27rem;
 	}
 	#election-cal .clndr .events .active-event {
 		order: -1;
 	}
 	#election-cal .clndr .days-container .days .day.event a {
 		pointer-events: none;
+		touch-action: none;
 		text-decoration: none;
 	}
 }
