@@ -291,16 +291,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		var target = e.target || e.srcElement;
 
 		// Only intercept .number spans
-		if (target.tagName === 'SPAN' && target.classList.contains("number")) {
-			href = target.closest('a').getAttribute('href');
+		if (target.tagName === 'SPAN') { // Would love to use two ampersands here, but WP chokes.
+			if (target.classList.contains("number")) {
+				href = target.closest('a').getAttribute('href');
 
-	        // Check if we're on a desktop device with hover
-			if (document.body.classList.contains('hasHover')) {
-				// Yes? Carry on.
-				window.location = href;
-			} else {
-	        	// No? Ignore link click, just activate link element.
-				e.preventDefault();
+				// Check if we're on a desktop device with hover
+				if (document.body.classList.contains('hasHover')) {
+					// Yes? Carry on.
+					window.location = href;
+				} else {
+					// No? Ignore link click, just activate link element.
+					e.preventDefault();
+				}
 			}
 		}
 	}
