@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					title: "Mail ballots begin to arrive",
 					date:  "2020-09-24",
 					type:  "vbm",
-					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
+					link:  "http://www.volusiaelections.org/default.htm",
 					icon:  '<i class="fas fa-envelope-open-text"></i>'
 				}, {
 					title: "Deadline to register",
@@ -75,14 +75,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
 					icon:  '<i class="fas fa-clock"></i>'
 				}, {
-					title: "Deadline to request mail ballot, in person",
-					date:  "2020-11-01",
+					title: "Deadline to request mail ballot",
+					date:  "2020-10-24",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
-					title: "Deadline to return mail ballot",
-					date:  "2020-10-31",
+					title: "Deadline for mail ballot <em>return</em>",
+					date:  "2020-11-03",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm",
 					icon:  '<i class="fas fa-inbox"></i>'
@@ -91,7 +91,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					date:  "2020-11-03",
 					type:  "election",
 					link:  "http://www.volusiaelections.org/ElectionInformation/election_calendar.html",
-					icon:  '<i class="fas fa-vote-yea"></i>'
+					icon:  '<i class="fas fa-vote-yea"></i>',
+					overrideIcon: true
 				}
 			],
 			multiDayEvents: {
@@ -179,10 +180,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 						iconContainerEl = aEl;
 					}
 
-					// Only add the icon if there isn't one already
+					// 1. Add the icon if there isn't one already
 					if (!dayEl.hasClass('has-icon')) {
 						iconContainerEl.append(`<span class="icon">${event.icon}</span>`);
 						dayEl.addClass('has-icon');
+					}
+					// 2. Or replace existing icon if asked to override existing one
+					else if (event.overrideIcon) {
+						iconContainerEl.find('.icon').html(event.icon);
 					}
 				}
 
