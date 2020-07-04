@@ -54,13 +54,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			startWithMonth: "2020-09-01",
 			events: [
 				{
-					// Next day after ballots begin to be sent
+					id:    "vbm-arrive", // ids must be a valid CSS class name and unique
 					title: "Mail ballots begin to arrive",
 					date:  "2020-09-24",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/default.htm",
 					icon:  '<i class="fas fa-envelope-open-text"></i>'
 				}, {
+					id:    "deadline-register",
 					title: "Deadline to register",
 					date:  "2020-10-05",
 					type:  "registration",
@@ -68,25 +69,29 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
 					// Early Voting: https://dos.myflorida.com/elections/for-voters/voting/early-voting/
+					id:    "early-voting",
 					title: "Early Voting",
 					start: "2020-10-19",
 					end:   "2020-11-01",
-					type:  "early-voting",
+					type:  "early",
 					link:  "http://www.volusiaelections.org/EarlyVoting/default.htm",
 					icon:  '<i class="fas fa-clock"></i>'
 				}, {
+					id:    "deadline-request-vbm",
 					title: "Deadline to request mail ballot",
 					date:  "2020-10-24",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteerequest.htm",
 					icon:  '<i class="fas fa-landmark"></i>'
 				}, {
+					id:    "deadline-return-vbm",
 					title: "Deadline for mail ballot <em>return</em>",
 					date:  "2020-11-03",
 					type:  "vbm",
 					link:  "http://www.volusiaelections.org/ElectionInformation/absenteereturn.htm",
 					icon:  '<i class="fas fa-inbox"></i>'
 				}, {
+					id:    "election-day",
 					title: "General Election Day<br>(polls open 7&ndash;7)",
 					date:  "2020-11-03",
 					type:  "election",
@@ -162,8 +167,30 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 		// Add event type classes
 		// https://github.com/kylestetz/CLNDR/issues/335#issuecomment-650769056
+
+		// Sort events to place all single-day events first, then order by start/date.
+		// NB: We have to duplicate the array with slice() since sort()
+		// sorts the array in place.
+		const kASC = -1, kSAME = 0, kDESC = 1;
+		var sortedEvents = this.options.events.slice().sort(function(event1, event2) {
+			// First, sort multi-day events to the end. Need booleans for easy comparison.
+			const multi1 = event1.hasOwnProperty('start'),
+				  multi2 = event2.hasOwnProperty('start');
+			
+			if (multi1 < multi2) return kASC;
+			if (multi1 > multi2) return kDESC;
+
+			// Then, sort evenly-sorted events by start date.
+			const date1 = multi1 ? event1.start : event1.date,
+				  date2 = multi2 ? event2.start : event2.date;
+
+			if (moment(date1).isBefore(date2)) return kASC;
+			if (moment(date1).isAfter(date2))  return kDESC;
+
+			return kSAME;
+		});
 		
-		for (let event of this.options.events) {
+		for (let event of sortedEvents) {
 			// Single-day events
 			if (event.date) {
 				mydate = event.date;
@@ -205,6 +232,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			// Multi-day events
 			else {
 				const range = moment.range(event.start, event.end);
+				let iconPlaced = false;
 
 				for (let day of range.by('day')) {
 					mydate = day.format('YYYY-MM-DD');
@@ -213,10 +241,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 					let dayEl = $('.day.calendar-day-'+mydate);
 					dayEl.addClass(mytype);
 
-					// Add in the icon on the starting date
-					if (event.icon && mydate == event.start) {
+					// Add in the icon on the starting date OR the earliest
+					// date without an existing event icon
+					if (event.icon && !iconPlaced && !dayEl.hasClass('has-icon')) {
 						dayEl.append(`<span class="icon">${event.icon}</span>`);
 						dayEl.addClass('has-icon');
+						iconPlaced = true;
 					}
 
 					if (event.link) {
@@ -234,9 +264,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			var target = self.buildTargetObject(e.currentTarget, true);
 			if (target.events.length) {
 				for (let event of target.events) {
-					var startdate = event.date ? event.date : event.start;
-					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
-					$(`.${event_item_class}`).addClass('active-event');
+					$(`.${event.id}`).addClass('active-event');
 				}
 			}
 		});
@@ -244,9 +272,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			var target = self.buildTargetObject(e.currentTarget, true);
 			if (target.events.length) {
 				for (let event of target.events) {
-					var startdate = event.date ? event.date : event.start;
-					var event_item_class = 'event-item-'+moment(startdate).format('YYYY-MM-DD');
-					$(`.${event_item_class}`).removeClass('active-event');
+					$(`.${event.id}`).removeClass('active-event');
 				}
 			}
 		});
@@ -360,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 			_.each(month, function(event) {
 				if (event.date) {
 					var dateStr = moment(event.date).format('YYYY-MM-DD'); %>
-				<div class="event-item <%= event.type %> <%= 'event-item-'+dateStr %>" data-date="<%= dateStr %>">
+				<div class="event-item <%= event.type %> <%= event.id %>" data-date="<%= dateStr %>">
 					<div class="event-icon"><%= event.icon %></div>
 					<div class="event-content">
 						<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
@@ -370,7 +396,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				</div>
 				<% } else if (!seenEarlyVoting) {
 					var dateStr = moment(event.start).format('YYYY-MM-DD'); %>
-				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.start).format('YYYY-MM-DD') %>" data-date="<%= dateStr %>">
+				<div class="event-item <%= event.type %> <%= event.id %>" data-date="<%= dateStr %>">
 					<div class="event-icon"><%= event.icon %></div>
 					<div class="event-content">
 						<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('MMM Do') %></div>
