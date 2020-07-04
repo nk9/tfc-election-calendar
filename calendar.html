@@ -353,22 +353,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
 				if (event.date) {
 					var dateStr = moment(event.date).format('YYYY-MM-DD'); %>
 				<div class="event-item <%= event.type %> <%= 'event-item-'+dateStr %>" data-date="<%= dateStr %>">
-					<div class="event-header">
-						<div class="event-icon"><%= event.icon %></div>
+					<div class="event-icon"><%= event.icon %></div>
+					<div class="event-content">
 						<div class="event-item-date"><%= moment(event.date).format('MMM Do') %></div>
+						<div class="event-item-title"><%= event.title %></div>
+						<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 					</div>
-					<div class="event-item-title"><%= event.title %></div>
-					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
 				<% } else if (!seenEarlyVoting) {
 					var dateStr = moment(event.start).format('YYYY-MM-DD'); %>
 				<div class="event-item <%= event.type %> <%= 'event-item-'+moment(event.start).format('YYYY-MM-DD') %>" data-date="<%= dateStr %>">
-					<div class="event-header">
-						<div class="event-icon"><%= event.icon %></div>
+					<div class="event-icon"><%= event.icon %></div>
+					<div class="event-content">
 						<div class="event-item-date"><%= moment(event.start).format('MMM Do') %>&ndash;<%= moment(event.end).format('MMM Do') %></div>
+						<div class="event-item-title"><%= event.title %></div>
+						<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 					</div>
-					<div class="event-item-title"><%= event.title %></div>
-					<div class="event-item-link"><a href="<%= event.link %>">Learn More</a></div>
 				</div>
 				<%
 					// In the general, early voting stops in November. Helpfully, CLNDR returns the event
@@ -547,13 +547,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	padding: .5rem;
 
 	border: 2px solid white;
-}
-.event-header {
 	display: flex;
 }
-.event-item-date {
+.event-icon {
+	flex: 0 0 20px;
+	height: 100%;
+}
+.event-content {
 	margin-left: .5rem;
+	display: flex;
+	flex-wrap: wrap;
+}
+.event-item-date {
 	font-weight: bold;
+}
+.event-content div {
+	flex: 1 0 100%;
 }
 #election-cal .clndr .events .active-event {
 	border: 2px solid #c21e2d;
